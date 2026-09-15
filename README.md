@@ -14,13 +14,12 @@ These are independent userscripts. Install either or both.
 - Use **Up** and **Down** in the favorites view to set your next-course order.
 - Open any course directly from its card.
 
-The overview script runs only on `/learn/dashboard`. It does not add controls or
-observers to KodeKloud lesson pages. Account enrollment and progress are fetched
-using the session already loaded by the dashboard; the temporary authentication
-token is never stored.
+The overview script runs only on `/learn/dashboard`. Account enrollment and progress
+are fetched using the session already loaded by the dashboard; the temporary
+authentication token is never stored.
 
 Favorite data uses Violentmonkey's `GM.getValue` and `GM.setValue` storage. It does
-not use KodeKloud's local storage, so clearing LibreWolf site data does not clear
+not use KodeKloud's local storage, so clearing site data does not clear
 the queue. Clearing Violentmonkey's extension data or this script's stored data
 will clear it.
 

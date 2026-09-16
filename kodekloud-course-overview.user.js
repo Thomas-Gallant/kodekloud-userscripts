@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KodeKloud Course Overview
 // @namespace    https://learn.kodekloud.com/
-// @version      1.0.0
+// @version      1.0.1
 // @description  Browse, filter, favorite, and prioritize the full KodeKloud course catalog.
 // @match        https://learn.kodekloud.com/learn/dashboard
 // @run-at       document-idle
@@ -613,7 +613,8 @@
       #kk-course-refresh:hover, .kk-course-favorite:hover, .kk-course-order button:hover:not(:disabled) { border-color: #0ea5e9; color: #0284c7; background: rgb(14 165 233 / 0.09); }
       #kk-course-refresh:disabled, .kk-course-order button:disabled { opacity: 0.4; cursor: default; }
       .kk-course-controls { display: grid; grid-template-columns: minmax(260px, 1fr) repeat(5, minmax(125px, auto)); gap: 9px; }
-      .kk-course-controls input, .kk-course-controls select { min-width: 0; border: 1px solid rgb(148 163 184 / 0.55); border-radius: 8px; padding: 10px 11px; color: inherit; background: transparent; font: 14px/1.2 system-ui, sans-serif; }
+      .kk-course-controls input, .kk-course-controls select { min-width: 0; border: 1px solid rgb(148 163 184 / 0.55); border-radius: 8px; padding: 10px 11px; color: #0f172a; background-color: #fff; color-scheme: light; font: 14px/1.2 system-ui, sans-serif; }
+      .kk-course-controls select option { color: #0f172a; background-color: #fff; }
       .kk-course-controls input:focus, .kk-course-controls select:focus { outline: 2px solid #0ea5e9; outline-offset: 1px; }
       #kk-course-status { min-height: 21px; margin: 14px 2px; color: #64748b; font-size: 13px; }
       #kk-course-status[data-state="error"] { color: #e11d48; }
@@ -640,7 +641,7 @@
       .kk-course-order strong { min-width: 34px; color: #7dd3fc; font: 750 11px/1 system-ui, sans-serif; text-align: center; }
       .kk-course-order button { border-color: #475569; padding: 6px 7px; color: #e2e8f0; background: #1e293b; }
       .kk-course-empty { padding: 60px 20px; border: 1px dashed rgb(148 163 184 / 0.5); border-radius: 10px; color: #64748b; text-align: center; }
-      @media (prefers-color-scheme: dark) { .kk-course-heading p, .kk-course-card-body > p, .kk-course-card-footer > span, #kk-course-status, .kk-course-empty { color: #94a3b8; } .kk-course-badge { color: #cbd5e1; } }
+      @media (prefers-color-scheme: dark) { .kk-course-heading p, .kk-course-card-body > p, .kk-course-card-footer > span, #kk-course-status, .kk-course-empty { color: #94a3b8; } .kk-course-badge { color: #cbd5e1; } .kk-course-controls input, .kk-course-controls select { color: #e2e8f0; background-color: #0f172a; border-color: rgb(148 163 184 / 0.55); color-scheme: dark; } .kk-course-controls select option { color: #e2e8f0; background-color: #0f172a; } }
       @media (max-width: 1100px) { .kk-course-controls { grid-template-columns: repeat(3, minmax(0, 1fr)); } .kk-course-controls input { grid-column: span 2; } }
       @media (max-width: 640px) { #kk-course-overview-tab { padding-inline: 9px; } #kk-course-overview-panel { padding-top: 18px; } .kk-course-heading h2 { font-size: 22px; } .kk-course-controls { grid-template-columns: 1fr; } .kk-course-controls input { grid-column: auto; } .kk-course-grid { grid-template-columns: 1fr; } }
     `;

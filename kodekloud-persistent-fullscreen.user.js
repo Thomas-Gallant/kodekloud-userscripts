@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KodeKloud Persistent Lesson Fullscreen
 // @namespace    https://learn.kodekloud.com/
-// @version      1.0.0
+// @version      1.0.1
 // @description  Keeps the video maximized when an autoplaying lesson replaces the Vimeo player.
 // @match        https://learn.kodekloud.com/learn/courses/*/module/*/lesson/*
 // @run-at       document-start
@@ -25,6 +25,7 @@
   addStyles();
   document.addEventListener("fullscreenchange", handleFullscreenChange, true);
   document.addEventListener("webkitfullscreenchange", handleFullscreenChange, true);
+  document.addEventListener("click", handleCssFullscreenClick, true);
   window.setInterval(checkForLessonChange, URL_POLL_INTERVAL_MS);
 
   function getLessonPath() {
@@ -97,6 +98,28 @@
     document.getElementById(EXIT_BUTTON_ID)?.remove();
   }
 
+  function handleCssFullscreenClick(event) {
+    if (!cssFullscreenActive || getFullscreenElement()) return;
+    if (event.target.closest?.(`#${EXIT_BUTTON_ID}`)) return;
+    const player = event.target.closest?.('[data-tour="video-player"]');
+    if (!player) return;
+    tryUpgradeToNativeFullscreen(player);
+  }
+
+  function tryUpgradeToNativeFullscreen(player) {
+    // CSS fallback cannot hide browser chrome / taskbar. A real user click
+    // *can* enter native fullscreen, so upgrade on the next click.
+    const target = player || document.documentElement;
+    try {
+      const request = target.requestFullscreen
+        ? target.requestFullscreen()
+        : target.webkitRequestFullscreen?.();
+      if (request?.catch) request.catch(() => {});
+    } catch {
+      // Stay in CSS fallback if native fullscreen is unavailable.
+    }
+  }
+
   function ensureExitButton() {
     if (!document.body) {
       document.addEventListener("DOMContentLoaded", ensureExitButton, { once: true });
@@ -130,10 +153,16 @@
 
       html.${MODE_CLASS} [data-tour="video-player"] {
         position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
         inset: 0 !important;
         z-index: 2147483646 !important;
-        width: 100vw !important;
-        height: 100vh !important;
+        width: auto !important;
+        height: auto !important;
+        min-width: 100% !important;
+        min-height: 100% !important;
         max-width: none !important;
         max-height: none !important;
         margin: 0 !important;

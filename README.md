@@ -63,6 +63,8 @@ prompt:
   fallback.
 - Pressing Escape to leave native fullscreen before navigation continues to
   work normally.
+- The pointer is hidden after two seconds of inactivity in fullscreen. Moving
+  the pointer or pressing a key restores it and access to the player controls.
 
 The script runs only on KodeKloud course lesson URLs and does not send or store
 data.

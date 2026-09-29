@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KodeKloud Persistent Lesson Fullscreen
 // @namespace    https://learn.kodekloud.com/
-// @version      1.0.1
+// @version      1.1.0
 // @description  Keeps the video maximized when an autoplaying lesson replaces the Vimeo player.
 // @match        https://learn.kodekloud.com/learn/courses/*/module/*/lesson/*
 // @run-at       document-start
@@ -13,19 +13,25 @@
 
   const MODE_CLASS = "kk-persistent-player";
   const EXIT_BUTTON_ID = "kk-persistent-player-exit";
+  const CURSOR_SHIELD_ID = "kk-persistent-player-cursor-shield";
   const LESSON_PATH = /\/learn\/courses\/[^/]+\/module\/[^/]+\/lesson\/[^/]+/;
   const TRANSITION_WINDOW_MS = 5000;
   const URL_POLL_INTERVAL_MS = 200;
+  const CURSOR_HIDE_DELAY_MS = 2000;
 
   let lessonPath = getLessonPath();
   let pendingFullscreenExit = null;
   let transitionDeadline = 0;
   let cssFullscreenActive = false;
+  let cursorHideTimer = null;
 
   addStyles();
   document.addEventListener("fullscreenchange", handleFullscreenChange, true);
   document.addEventListener("webkitfullscreenchange", handleFullscreenChange, true);
   document.addEventListener("click", handleCssFullscreenClick, true);
+  document.addEventListener("pointermove", resetCursorHideTimer, true);
+  document.addEventListener("pointerdown", resetCursorHideTimer, true);
+  document.addEventListener("keydown", resetCursorHideTimer, true);
   window.setInterval(checkForLessonChange, URL_POLL_INTERVAL_MS);
 
   function getLessonPath() {
@@ -40,8 +46,11 @@
     if (getFullscreenElement()) {
       pendingFullscreenExit = null;
       disableCssFullscreen();
+      resetCursorHideTimer();
       return;
     }
+
+    stopCursorHiding();
 
     if (Date.now() <= transitionDeadline) {
       enableCssFullscreen();
@@ -90,12 +99,41 @@
     cssFullscreenActive = true;
     document.documentElement.classList.add(MODE_CLASS);
     ensureExitButton();
+    resetCursorHideTimer();
   }
 
   function disableCssFullscreen() {
     cssFullscreenActive = false;
     document.documentElement.classList.remove(MODE_CLASS);
     document.getElementById(EXIT_BUTTON_ID)?.remove();
+    if (!getFullscreenElement()) stopCursorHiding();
+  }
+
+  function resetCursorHideTimer() {
+    if (!cssFullscreenActive && !getFullscreenElement()) return;
+
+    document.getElementById(CURSOR_SHIELD_ID)?.remove();
+    window.clearTimeout(cursorHideTimer);
+    cursorHideTimer = window.setTimeout(showCursorShield, CURSOR_HIDE_DELAY_MS);
+  }
+
+  function showCursorShield() {
+    const fullscreenElement = getFullscreenElement();
+    const host = fullscreenElement || (cssFullscreenActive ? document.body : null);
+    if (!host || document.getElementById(CURSOR_SHIELD_ID)) return;
+
+    const shield = document.createElement("div");
+    shield.id = CURSOR_SHIELD_ID;
+    shield.setAttribute("aria-hidden", "true");
+    shield.addEventListener("pointermove", resetCursorHideTimer, { once: true });
+    shield.addEventListener("pointerdown", resetCursorHideTimer, { once: true });
+    host.appendChild(shield);
+  }
+
+  function stopCursorHiding() {
+    window.clearTimeout(cursorHideTimer);
+    cursorHideTimer = null;
+    document.getElementById(CURSOR_SHIELD_ID)?.remove();
   }
 
   function handleCssFullscreenClick(event) {
@@ -199,6 +237,14 @@
       #${EXIT_BUTTON_ID}:hover,
       #${EXIT_BUTTON_ID}:focus-visible {
         opacity: 1 !important;
+      }
+
+      #${CURSOR_SHIELD_ID} {
+        position: fixed !important;
+        inset: 0 !important;
+        z-index: 2147483646 !important;
+        cursor: none !important;
+        background: transparent !important;
       }
     `;
 
